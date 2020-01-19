@@ -1,0 +1,40 @@
+.dashboard__charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 24px;
+  --chart-height: 50;
+}
+
+.dashboard__chart_orders {
+  --chart-column-color: var(--yellow);
+}
+
+.dashboard__chart_sales {
+  --chart-column-color: var(--green);
+}
+
+.dashboard__chart_customers {
+  --chart-column-color: var(--purple);
+}
+
+.dashboard .sortable-table {
+  --cols: 6;
+}
+
+.dashboard__container {
+  justify-content: flex-start;
+  flex-direction: column;
+  display: flex;
+}
+
+.dashboard__container h1 {
+  font-size: 21pt;
+  color: #6e7980;
+}
+
+.range__picker__row {
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  display: flex;
+}

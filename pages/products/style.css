@@ -1,0 +1,134 @@
+h1 {
+	color: #778899;
+	font: 400 19pt Tahoma, Arial, sans-serif;
+}
+
+span.blue__header {
+	color: #55bbee;
+}
+
+form {
+	padding: 25px 20pt;
+	background-color: #ffffff;
+}
+
+label {
+	color: #778899;
+	display: block;
+}
+
+.input__text__field, .input__number__field {
+	margin-bottom: 30px;
+	padding: 8px 5pt;
+	color: #445566;
+	border: 1px solid #778899;
+	border-radius: 5px;
+}
+
+input.input__text__field {
+	width: 480px;
+	font: 400 13pt Tahoma, Arial, sans-serif;
+}
+
+input.input__number__field {
+	font: 400 13pt Tahoma, Arial, sans-serif;
+}
+
+textarea.input__text__field {
+	width: 680px;
+	height: 180px;
+	font: 400 12pt Courier, monospaced;
+}
+
+select.input__text__field {
+	font: 400 13pt Tahoma, Arial, sans-serif;
+}
+
+div.image__load__controls, div.product__save__controls {
+	margin: 20px 0 35px;
+}
+
+.image__load__controls button, .product__save__controls button {
+	height: 39px;
+	color: #3388cc;
+	background-color: #ffffff;
+	border: 1px solid #3388cc;
+	border-radius: 8px;
+	font: 400 15pt Tahoma, Arial, sans-serif;
+	cursor: pointer;
+}
+
+.formatted__width {
+	margin-right: 25px;
+	width: 240px;
+}
+
+.elem__price, .elem__discount {
+	display: inline-block;
+}
+
+div.image__gallery__field {
+	width: 680px;
+	align-items: stretch;
+	flex-direction: column;
+	display: flex;
+}
+
+
+div.dragged__image__row {
+	position: fixed;
+	height: 61px;
+	border: 1px solid #3388cc;
+	border-radius: 5px;
+	background-color: #ffffff;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: row;
+	display: flex;
+}
+
+div.image__item {
+	height: 61px;
+	border-left: 1px solid #ffffff;
+	border-radius: 5px;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: row;
+	display: flex;
+}
+
+div.image__item__content {
+	height: 59px;
+	align-items: center;
+	justify-content: flex-start;
+	flex-direction: row;
+	display: flex;
+
+}
+
+span.image__grab__area {
+	padding: 15px;
+	width: 31px;
+	height: 59px;
+	background: transparent url("../../assets/icons/icon-grab.svg") no-repeat center center;
+	cursor: pointer;
+}
+
+div.image__item__remove {
+	width: 31px;
+	height: 59px;
+	background: transparent url("../../assets/icons/icon-trash.svg") no-repeat center center;
+	cursor: pointer;
+}
+
+.image__item__content img {
+	margin: 0 20px;
+	padding: 5px;
+	height: 45px;
+	border: 1px solid #778899;
+}
+
+.dragged {
+	border: 1px solid #3388cc !important;
+}
+
