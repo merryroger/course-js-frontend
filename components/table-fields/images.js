@@ -1,6 +1,10 @@
 export default {
   title: "Image",
-  render(row) {
-    return row.images.length ? `<img class="sortable-table-image" alt="Image" src="${row.images[0].url}">` : '';
-  }
+  render(src) {
+    return `<img src="${src.images[0].url}" height="20" />`;
+  },
+  getContent(value) {
+    return null;
+  },
+  compare: null
 }

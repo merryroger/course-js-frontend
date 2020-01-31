@@ -1,11 +1,14 @@
-import escapeHtml from "../../lib/escape-html.js";
-
 export default {
   title: "Name",
-  compare(a, b) {
-    return a.title.localeCompare(b.title);
+  render(text) {
+    return text.title;
   },
-  render(row) {
-    return escapeHtml(String(row.title))
+  getContent(value) {
+    return value.innerHTML;
+  },
+  compare(value1, value2) {
+    return value1 > value2 ? 1 :
+      value1 == value2 ? 0 : 
+      -1;
   }
 }

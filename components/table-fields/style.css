@@ -1,3 +1,8 @@
+.sortable__table{
+  width: 100%;
+  display: table;
+}
+
 .sortable-table-image {
   height: 40px;
   max-width: 100%;
@@ -12,4 +17,25 @@
 
 .sortable-field-tooltip__subcategory {
   color: var(--dark-blue);
+}
+
+.sortable-table__row, .sortable-table__header {
+  color: #333333;
+  text-decoration: none;
+  display: table-row;
+}
+
+.sortable-table__row:hover {
+  background-color: #e8e8e8;
+}
+
+.sortable-table__header div {
+  text-align: center;
+  border-bottom: 1px solid #666666;
+  cursor: pointer;
+}
+
+.sortable-table__cell {
+  padding: 12px 5pt;
+  display: table-cell;
 }

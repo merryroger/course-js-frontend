@@ -1,187 +1,150 @@
-import fetchJson from "../../lib/fetch-json.js";
-import "../tooltip/index.js";
-import * as tableFields from '../table-fields/index.js';
-import createElement from "../../lib/create-element.js";
+import * as tableFields from "../../../components/table-fields/index.js";
+import createElement from "../../../lib/create-element.js";
 
 export default class SortableTable {
 
-  pageSize = 30;
+	constructor({ fieldsEnabled, order, url, isDynamic, emptyPlaceholder }) {
+		this.fieldsEnabled = fieldsEnabled;
+		this.order = order;
+		this.url = new URL(url, location.href);
+		this.isDynamic = isDynamic;
+		this.emptyPlaceholder = emptyPlaceholder;
 
-  data = [];
+		this.headerClick = this.tableHeaderClick.bind(this);
 
-  constructor({fieldsEnabled, order, url, isDynamic, emptyPlaceholder}) {
-    this.fieldsEnabled = fieldsEnabled;
-    this.order = order;
+		this.render();
+	}
 
-    this.isDynamic = isDynamic; // upload more data / use server for sorting etc
+	async render() {
+		this.elem = createElement(`
+				<div class="sortable__table">
+					<div data-elem="header" class="sortable-table__header">
+    			    ${this.renderHeaders()}
+      				</div>
+				</div>
+			`);
 
-    this.url = new URL(url, location.href);
+		this.elem.querySelector(".sortable-table__header").addEventListener("pointerdown", this.headerClick);
 
-    this.emptyPlaceholder = emptyPlaceholder;
+		let data = await this.loadData();
 
-    this.render();
-  }
+		return this.elem;
+	}
 
-  renderHeaders() {
-    let content = ``;
-    for (let name of this.fieldsEnabled) {
-      let field = tableFields[name];
-      let title = `<span>${field.title}</span>`;
-      if (this.order.field === name) {
-        title += `<span class="sortable-table__sort-arrow">
-          <span class="sortable-table__sort-arrow_${this.order.direction === 1 ? 'asc' : 'desc'}"></span>
-        </span>`
+	async setUrl(url) {
+		this.url = new URL(url, location.href);
+		try {
+      	  let result = await fetch(this.url);
+          let data = await result.json();
+          await this.rebuildTableBody(data);
+      } catch(e) {
+      	  new Notification(e.message);
+      }	
+	}
+
+	async loadData() {
+      try {
+        let result = await fetch(this.url);
+        let data = await result.json();
+        await this.renderTableBody(data);
+      } catch(e) {
+        new Notification(e.message);
       }
+	}
 
-      content += `<div class="sortable-table__cell" data-name="${name}" ${field.compare ? 'data-sortable' : ''}>${title}</div>`
-    }
-    return content;
-  }
+	renderHeaders() {
+		let headers = [];
+		let order = "";
 
-  async loadRows() {
-    this.url.searchParams.set('_sort', this.order.field);
-    this.url.searchParams.set('_order', this.order.direction === 1 ? 'asc' : 'desc');
-    this.url.searchParams.set('_start', this.data.length);
-    this.url.searchParams.set('_end', this.data.length + this.pageSize);
+		for(let field of this.fieldsEnabled) {
+			if(field === this.order.field) {
+				order = (this.order.direction == 1) ? "&nbsp;▼" : "&nbsp;▲";
+			} else {
+				order = "";
+			}
 
-    this.elem.classList.add(`sortable-table_loading`);
+			headers[headers.length] = `<div class="sortable-table__cell" data-name="${field}"><span>${tableFields[field].title}${order}</span></div>`;
+		}
 
-    let products = await fetchJson(this.url);
+		return headers.join('');
+	}
 
-    if (products.length === 0) {
-      this.isLoaded = true;
-    } else {
-      this.data.push(...products);
-      this.renderRows(products);
-    }
+	rebuildTableBody(data) {
+		let tBody = this.elem.querySelector("tbody");
 
-    this.elem.classList.remove(`sortable-table_loading`);
+		tBody.innerHTML = "";
+		tBody.innerHTML = this.renderTableRows(data);
 
-    if (this.isEmpty()) {
-      this.elem.classList.add('sortable-table_empty');
-    } else {
-      this.elem.classList.remove('sortable-table_empty');
-    }
-  }
+		this.sortContent(tBody, this.order.field);
+	}
 
-  isEmpty() {
-    return this.data.length == 0;
-  }
+	renderTableBody(data) {
+		let tBody = document.createElement("tbody");
+		tBody.className = "sortable-table__body";
 
-  onHeaderClick(event) {
-    let sortHeader = event.target.closest('.sortable-table__cell');
-    if (!("sortable" in sortHeader.dataset)) return;
+		tBody.innerHTML = this.renderTableRows(data);
 
-    let field = sortHeader.dataset.name;
+		this.elem.append(tBody);
 
-    let direction;
-    if (field === this.order.field) {
-      direction = -this.order.direction;
-    } else {
-      direction = 1;
-    }
+		this.sortContent(tBody, this.order.field);
+	}
 
-    this.sort({
-      field,
-      direction
-    });
-  }
+	renderTableRows(data) {
+		let rows = "";
 
-  setUrl(url) {
-    this.url = new URL(url, location.href);
-    this.data = [];
-    this.removeAllRows();
-    this.loadRows();
-  }
+		for(let item of data) {
+			rows += this.renderTableRow(item);
+		}
 
-  async sort(order = this.order) {
-    let sortArrowElem = this.elem.querySelector('.sortable-table__sort-arrow');
-    let headerElem = this.elem.querySelector(`[data-name="${order.field}"]`);
-    headerElem.append(sortArrowElem); // moves if needed
-    sortArrowElem.firstElementChild.className = `sortable-table__sort-arrow_${order.direction === 1 ? 'asc' : 'desc'}`;
+		return rows;
+	}
 
-    this.order = order;
+	renderTableRow(item) {
+		return `<div class="sortable-table__row">${this.renderRowContent(item)}</div>`;
+	}
 
-    if (this.isDynamic) {
-      this.data = [];
-      this.removeAllRows();
-      await this.loadRows();
+	renderRowContent(item) {
+		let row = [];
+		for(let field of this.fieldsEnabled) {
+			row[row.length] = `<div class="sortable-table__cell" data-name="${field}">${tableFields[field].render(item)}</div>`;
+		}
 
-    } else {
+		return row.join('');
+	}
 
-      let comparator = (a, b) => tableFields[order.field].compare(a, b) * order.direction;
+	tableHeaderClick(event) {
+		if(event.target.closest(".sortable-table__cell") == null)
+			return;
 
-      this.data.sort(comparator);
+		let field = event.target.closest(".sortable-table__cell").dataset.name;
 
-      this.removeAllRows();
-      this.renderRows(this.data);
-    }
+		if(tableFields[field].compare == null)
+			return;
 
-  }
+		if(this.order.field == field) {
+			this.order.direction = !this.order.direction;
+		} else {
+			this.order.field = field;
+			this.order.direction = 1;
+		}
 
-  async render() {
-    this.elem = createElement(`<div class="sortable-table">
-      <div data-elem="header" class="sortable-table__header sortable-table__row">
-        ${this.renderHeaders()}
-      </div>
-      <div data-elem="body" class="sortable-table__body"></div>
-      <div data-elem="loading" class="loading-line sortable-table__loading-line"></div>
-      <div data-elem="emptyPlaceholder" class="sortable-table__empty-placeholder"></div>
-    </div>`);
+		let tBody = this.elem.querySelector("tbody");
+   		this.sortContent(tBody, field);
 
-    this.elems = {};
-    for (let subElem of this.elem.querySelectorAll('[data-elem]')) {
-      this.elems[subElem.dataset.elem] = subElem;
-    }
+		this.elem.querySelector(".sortable-table__header").innerHTML = this.renderHeaders();
+	}
 
-    this.elems.emptyPlaceholder.append(this.emptyPlaceholder);
+	sortContent(tBody, field) {
+		let getContent = tableFields[field].getContent;
+		let compare = tableFields[field].compare;
 
-    this.elem.addEventListener('click', event => event.target.closest('.sortable-table__header .sortable-table__cell') && this.onHeaderClick(event));
+    	let rows = Array.from(tBody.querySelectorAll(".sortable-table__row"));
 
-    // disable selection on header cell mousedown
-    this.elems.header.addEventListener('pointerdown', event => event.target.closest('.sortable-table__cell') && event.preventDefault());
+    	rows = (!this.order.direction) ? 
+      	rows.sort((rowA, rowB) => compare(getContent(rowA.querySelector(`[data-name=${field}]`)), getContent(rowB.querySelector(`[data-name=${field}]`)))) : 
+      	rows.sort((rowA, rowB) => compare(getContent(rowB.querySelector(`[data-name=${field}]`)), getContent(rowA.querySelector(`[data-name=${field}]`))));
+    
+    	tBody.append(...rows);
+	}
 
-    if (this.isDynamic) {
-      window.addEventListener('scroll', event => this.onWindowScroll(event));
-    }
-
-    this.loadRows();
-  }
-
-  removeAllRows() {
-    this.elems.body.innerHTML = '';
-  }
-
-  renderRowContent(row) {
-    let content = '';
-    for (let name of this.fieldsEnabled) {
-      let field = tableFields[name];
-      content += `<div class="sortable-table__cell">${field.render(row)}</div>`;
-    }
-    return content;
-  }
-
-  renderRow(row) {
-    return `<div class="sortable-table__row">${this.renderRowContent(row)}</div>`;
-  }
-
-  renderRows(rows) {
-    let content = ``;
-    for (let row of rows) {
-      content += this.renderRow(row);
-    }
-    this.elems.body.insertAdjacentHTML('beforeEnd', content);
-  }
-
-  onWindowScroll() {
-    if (this.isLoaded) return; // fully loaded
-    if (this.elem.classList.contains('sortable-table_loading')) return; // loading right now
-
-    let coords = this.elem.getBoundingClientRect();
-
-    if (coords.bottom < document.documentElement.clientHeight) {
-      this.loadRows();
-    }
-  }
-
-};
+}

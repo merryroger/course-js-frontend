@@ -2,6 +2,7 @@ import createElement from "../../lib/create-element.js";
 import RangePicker from "../../components/range-picker/index.js";
 import ColumnChart from "../../components/column-chart/index.js";
 import ProductsTable from "../../components/products-table/index.js";
+//import SortableTable from "../../components/sortable-table/index.js";
 import formatMoney from "../../lib/format-money.js";
 import sumObjectValues from "../../lib/sum-object-values.js";
 
@@ -13,6 +14,7 @@ export default class DashboardPage {
       <div class="dashboard__container">
 	      <div class="range__picker__row"><h1>Dashboard</h1></div>
         <div class="dashboard__charts"></div>
+        <h1>Best sellers</h1>
 	      <div class="dashboard__table"></div>
       </div>
     `);
@@ -80,6 +82,7 @@ export default class DashboardPage {
     };
 
     this.table = new ProductsTable(inidata);
+    //this.table = new SortableTable(inidata); // console.log(this.table);
     this.tableRebuild = this.rebuildTable.bind(this);
 
     this.elem.querySelector('.dashboard__table').append(this.table.elem);

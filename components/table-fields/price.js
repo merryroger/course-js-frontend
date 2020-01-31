@@ -1,11 +1,12 @@
-import formatMoney from "../../lib/format-money.js";
-
 export default {
   title: "Price",
-  compare(a, b) {
-    return a.price - b.price;
+  render(value) {
+    return `$${value.price}`;
   },
-  render(row) {
-    return `$${formatMoney(+row.price)}`;
+  getContent(value) {
+    return +value.innerHTML.substr(1);
+  },
+  compare(value1, value2) {
+    return value1 - value2;
   }
 }

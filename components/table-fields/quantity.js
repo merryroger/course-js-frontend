@@ -1,11 +1,12 @@
-import escapeHtml from "../../lib/escape-html.js";
-
 export default {
   title: "Quantity",
-  compare(a, b) {
-    return a.quantity - b.quantity;
+  render(value) {
+    return value.quantity;
   },
-  render(row) {
-    return escapeHtml(String(row.quantity))
+  getContent(value) {
+    return +value.innerHTML;
+  },
+  compare(value1, value2) {
+    return value1 - value2;
   }
 }
