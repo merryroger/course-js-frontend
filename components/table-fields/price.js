@@ -1,5 +1,6 @@
 export default {
   title: "Price",
+  display: "ra",
   render(value) {
     return `$${value.price}`;
   },

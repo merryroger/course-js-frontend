@@ -1,4 +1,5 @@
 import buildNumberField from "../../lib/build-number-field.js";
+import getInputValue from "../../lib/get-input-value.js";
 
 let quantity = {
 	params: {
@@ -11,7 +12,8 @@ let quantity = {
 		required: true
 	},
 	order: 7,
-	build: (params, value) => buildNumberField(params, value)
+	build: (params, value) => buildNumberField(params, value),
+	getValue: (form) => getInputValue(form, "quantity")
 }
 
 export default quantity;

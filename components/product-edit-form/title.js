@@ -1,4 +1,5 @@
 import buildTextField from "../../lib/build-text-field.js";
+import getInputValue from "../../lib/get-input-value.js";
 
 let title = {
 	params: {
@@ -12,7 +13,8 @@ let title = {
 		autofocus: true
 	},
 	order: 1,
-	build: (params, value) => buildTextField(params, value)
+	build: (params, value) => buildTextField(params, value),
+	getValue: (form) => getInputValue(form, "title")
 }
 
 export default title;

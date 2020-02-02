@@ -1,4 +1,5 @@
 import buildTextArea from "../../lib/build-textarea-field.js";
+import getInputValue from "../../lib/get-input-value.js";
 
 let description = {
 	params: {
@@ -11,7 +12,8 @@ let description = {
 		required: true
 	},
 	order: 2,
-	build: (params, value) => buildTextArea(params, value)
+	build: (params, value) => buildTextArea(params, value),
+	getValue: (form) => getInputValue(form, "description")
 }
 
 export default description;

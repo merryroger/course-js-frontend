@@ -1,6 +1,7 @@
 import buildSelect from "../../lib/build-select-field.js";
 import buildCategorySubcategoryOptions from "../../lib/build-category-subcategory-options.js";
 import fetchJson from "../../../lib/fetch-json.js";
+import getSelectValue from "../../lib/get-select-value.js";
 
 let subcategory = {
 	params: {
@@ -19,6 +20,11 @@ let subcategory = {
 		let subcategories = await fetchJson(url);
 		let options = buildCategorySubcategoryOptions(categories, subcategories, value);
 		return buildSelect(params, options);
+	},
+	getValue: (form) => {
+		let result = getSelectValue(form, "subcategory");
+		result.subcategory = result.subcategory.split('.')[0];
+		return result;
 	}
 }
 

@@ -39,3 +39,8 @@
   padding: 12px 5pt;
   display: table-cell;
 }
+
+.ra {
+  padding-right: 20pt;
+  text-align: right;
+}

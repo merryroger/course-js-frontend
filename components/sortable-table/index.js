@@ -106,7 +106,8 @@ export default class SortableTable {
 	renderRowContent(item) {
 		let row = [];
 		for(let field of this.fieldsEnabled) {
-			row[row.length] = `<div class="sortable-table__cell" data-name="${field}">${tableFields[field].render(item)}</div>`;
+			let display = (tableFields[field].display !== undefined) ? ` ${tableFields[field].display}` : "";
+			row[row.length] = `<div class="sortable-table__cell${display}" data-name="${field}">${tableFields[field].render(item)}</div>`;
 		}
 
 		return row.join('');

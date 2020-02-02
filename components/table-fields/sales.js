@@ -1,5 +1,6 @@
 export default {
   title: "Sales",
+  display: "ra",
   render(value) {
     return value.discount;
   },

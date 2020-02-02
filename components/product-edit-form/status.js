@@ -1,5 +1,6 @@
 import buildSelect from "../../lib/build-select-field.js";
 import buildStatusOptions from "../../lib/build-status-options.js";
+import getSelectValue from "../../lib/get-select-value.js";
 
 let status = {
 	params: {
@@ -14,7 +15,8 @@ let status = {
 	build: function(params, value) {
 		let options = buildStatusOptions(value);
 		return buildSelect(params, options);
-	}
+	},
+	getValue: (form) => getSelectValue(form, "status")
 }
 
 export default status;

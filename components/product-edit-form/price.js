@@ -1,4 +1,5 @@
 import buildNumberField from "../../lib/build-number-field.js";
+import getInputValue from "../../lib/get-input-value.js";
 
 let price = {
 	params: {
@@ -11,7 +12,8 @@ let price = {
 		required: true
 	},
 	order: 5,
-	build: (params, value) => buildNumberField(params, value)
+	build: (params, value) => buildNumberField(params, value),
+	getValue: (form) => getInputValue(form, "price")
 }
 
 export default price;

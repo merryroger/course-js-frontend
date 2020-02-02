@@ -3,12 +3,19 @@ import createElement from "../../../lib/create-element.js";
 import buildImageItem from "../../../lib/build-image-item.js";
 import fetchJson from "../../../lib/fetch-json.js";
 import buildForm from "../../../components/product-edit-form/form-builder.js";
+import pickFormData from "../../../components/product-edit-form/form-data-picker.js";
 
 export default class ProductEdition {
 
 	async render() {
     this.url = new URL('/api/rest/products', location.href);
     this.url.searchParams.set('id', location.pathname.split("/").pop());
+
+    this.ptrDown = this.pointerDown.bind(this);
+    this.ptrMove = this.pointerMove.bind(this);
+    this.ptrUp = this.pointerUp.bind(this);
+    this.imgUpl = this.uploadImage.bind(this);
+    this.submit = this.submitForm.bind(this);
 
     let product = await fetchJson(this.url);
 
@@ -17,15 +24,13 @@ export default class ProductEdition {
 			  <h1><span class="blue__header">Products</span> / Edit Product</h1>
         <form id="product__form">
           ${await buildForm(product[0])}
-          <div class="product__save__controls"><button type="button" class="product__save__button formatted__width">Save product</button></div>
+          <div class="product__save__controls"><button type="button" name="save_data" class="product__save__button formatted__width">Save product</button></div>
         </form>
       </div>
 		`);
 
-    this.ptrDown = this.pointerDown.bind(this);
-    this.ptrMove = this.pointerMove.bind(this);
-    this.ptrUp = this.pointerUp.bind(this);
-    this.imgUpl = this.uploadImage.bind(this);
+    this.elem.querySelector(".product__save__button").onclick = this.submit;
+
     this.elem.addEventListener("pointerdown", this.ptrDown);
 
     this.elem.querySelector(".image__load__button").onclick = this.imgUpl;
@@ -182,10 +187,6 @@ export default class ProductEdition {
 
         imageURL = result.data.link;
       } catch(e) {
-        //if (!(e instanceof FetchError)) {
-        //  throw e;
-        //}
-        
         new ErrorNotification('Upload error: ' + e.message);
         return;
 
@@ -204,6 +205,23 @@ export default class ProductEdition {
     fileInput.hidden = true;
     document.body.append(fileInput);
     fileInput.click();
+  }
+
+  async submitForm(event) {
+    event.preventDefault();
+
+    let url = new URL('/api/rest/products', location.href);
+    let form = this.elem.querySelector("#product__form");
+    let formData = await pickFormData(form);
+
+    const params = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    };
+
+    let result = await fetchJson(url, params);
+
   }
 
 }
